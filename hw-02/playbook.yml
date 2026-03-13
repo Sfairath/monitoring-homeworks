@@ -1,0 +1,50 @@
+---
+- name: Install Zabbix-agent
+  hosts: zabbix_group
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Update cache
+      apt:
+        update_cache: true
+
+    - name: Ensure basic packages
+      apt:
+        name:
+          - wget
+          - curl
+        state: present
+
+    - name: Get Zabbix.deb
+      get_url:
+        url: "https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.0+ubuntu22.04_all.deb"
+        dest: "/tmp/zabbix-agent.deb"
+    
+    - name: Remove previous agent
+      apt:
+        name:
+          - zabbix-release
+        state: absent
+        autoremove: true
+        autoclean: true
+
+    - name: Install zabbix list 
+      apt:
+        deb: "/tmp/zabbix-agent.deb"
+
+    - name: Update cache
+      apt:
+        update_cache: true
+
+    - name: Install zabbix-agent
+      apt:
+        name:
+          - zabbix-agent
+        state: present
+
+    - name: Start and enable Zabbix Agent
+      systemd:
+        name: zabbix-agent
+        state: started
+        enabled: true
