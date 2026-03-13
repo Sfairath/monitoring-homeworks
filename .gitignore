@@ -6,3 +6,4 @@
 !*.md
 !hw-*/img
 !hw-*/img/**
+!hw-*/playbook.yml
